@@ -1,5 +1,5 @@
 # ============================================
-# automation_engine.py (FINAL: Mapeamento Completo de Esperas)
+# automation_engine.py (AGORA SUPORTA TIRAR SCREENSHOT)
 # Motor de execução que lê o JSON e executa as ações
 # ============================================
 import json
@@ -17,7 +17,8 @@ from web_actions import (
     validar_texto_esperado,
     esperar_por_alerta,
     esperar_por_visibilidade, 
-    esperar_por_invisibilidade # IMPORTADO
+    esperar_por_invisibilidade,
+    tirar_screenshot # FUNÇÃO IMPORTADA
 )
 
 # Mapeamento: NOME DA AÇÃO NO JSON -> FUNÇÃO
@@ -28,7 +29,8 @@ ACTION_MAP = {
     "validar_texto_esperado": validar_texto_esperado,
     "esperar_por_alerta": esperar_por_alerta, 
     "esperar_por_visibilidade": esperar_por_visibilidade, 
-    "esperar_por_invisibilidade": esperar_por_invisibilidade, # MAPEADO
+    "esperar_por_invisibilidade": esperar_por_invisibilidade,
+    "tirar_screenshot": tirar_screenshot, # MAPEADO
 }
 
 def _inicializar_driver():
@@ -77,8 +79,13 @@ def executar_automacao(json_acoes: str) -> str:
             if acao in ACTION_MAP:
                 funcao = ACTION_MAP[acao]
                 
-                # Tratamento especial para ações que usam seletor
-                if acao in ["preencher_campo", "clicar_elemento", "validar_texto_esperado", "esperar_por_visibilidade", "esperar_por_invisibilidade"]:
+                # Tratamento especial para tirar_screenshot (apenas nome do arquivo)
+                if acao == "tirar_screenshot":
+                    funcao(driver, *parametros)
+                    log_execucao.append(f"➡️ Executando: {acao} com nome: {parametros[0]}")
+                    
+                # Tratamento para ações que usam seletor
+                elif acao in ["preencher_campo", "clicar_elemento", "validar_texto_esperado", "esperar_por_visibilidade", "esperar_por_invisibilidade"]:
                     
                     if not parametros:
                         log_execucao.append(f"⚠️ Ação '{acao}' requer um seletor e/ou texto. Ignorando.")

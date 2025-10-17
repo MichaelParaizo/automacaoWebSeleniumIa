@@ -1,5 +1,5 @@
 # ============================================
-# ai_interpreter.py (FINALÍSSIMA: CORREÇÃO DO TEXTO DE SUCESSO)
+# ai_interpreter.py (FINAL: AGORA GERA EVIDÊNCIAS)
 # ============================================
 import os
 import json
@@ -31,11 +31,11 @@ def get_automation_tools():
                             "items": {
                                 "type": "object",
                                 "properties": {
-                                    # Manter todas as funções para evitar erros de import
-                                    "acao": {"type": "string", "enum": ["abrir_site", "preencher_campo", "clicar_elemento", "validar_texto_esperado", "esperar_por_alerta", "esperar_por_visibilidade", "esperar_por_invisibilidade"]}, 
+                                    # Incluída a nova ação de screenshot
+                                    "acao": {"type": "string", "enum": ["abrir_site", "preencher_campo", "clicar_elemento", "validar_texto_esperado", "esperar_por_alerta", "esperar_por_visibilidade", "esperar_por_invisibilidade", "tirar_screenshot"]}, 
                                     "parametros": {
                                         "type": "array",
-                                        "description": "Lista de parâmetros necessários. O primeiro é sempre o seletor (ID, class, ou xpath) ou a URL.",
+                                        "description": "Lista de parâmetros necessários. O primeiro é sempre o seletor (ID, class, ou xpath) ou a URL. Para 'tirar_screenshot', o parâmetro é apenas o nome do arquivo.",
                                         "items": {"type": "string"}
                                     }
                                 },
@@ -59,6 +59,12 @@ def interpretar_comando(comando: str) -> str:
     system_prompt = f"""
     Você é um assistente de automação web. Sua única tarefa é traduzir o pedido do usuário para uma chamada da função `executar_script_automacao`.
     O site de teste é 'https://www.demoblaze.com/'.
+    
+    **NOVA INSTRUÇÃO:** Você deve incluir a ação `tirar_screenshot` nos seguintes pontos do fluxo:
+    1. Após abrir o site (nome: '01_Home').
+    2. Após o Login bem-sucedido (nome: '02_Logado').
+    3. Após adicionar o item ao carrinho (nome: '03_Item_Adicionado').
+    4. Após a validação final de sucesso da compra (nome: '04_Compra_Sucesso').
 
     ### Seletores e Fluxo de Compra no Demoblaze:
     - URL Principal: 'https://www.demoblaze.com/'
@@ -89,7 +95,7 @@ def interpretar_comando(comando: str) -> str:
     - Login: 'michaelparaizo' e '12345'
     - Dados de Compra: Nome: 'Michael Paraizo', País: 'Brazil', Cidade: 'Sao Paulo', Cartão: '123456789', Mês: '10', Ano: '2027'.
     
-    Você DEVE gerar a chamada de função completa, encadeando todas as ações, validações e preenchimentos de forma lógica. O script deve PARAR APÓS o clique no botão 'OK' que fecha o modal de sucesso final.
+    Você DEVE gerar a chamada de função completa, encadeando todas as ações, validações e preenchimentos de forma lógica, incluindo os 4 pontos de screenshots.
     """
 
     try:

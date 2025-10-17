@@ -1,13 +1,13 @@
-# Ignorar ambiente virtual
+
 venv/
 
-# Ignorar cache do Python
+
 _pycache_/
 *.pyc
 
-# Ignorar arquivos sensíveis
+
 .env
 src/.env
 
-# Ignorar pastas de saída
+
 outputs/
